@@ -1,5 +1,5 @@
-$iconSpritePath: "../images/glyphicons-halflings.png";
-$iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
+$iconSpritePath: "../<%= imagesDir %>/glyphicons-halflings.png";
+$iconWhiteSpritePath: "../<%= imagesDir %>/glyphicons-halflings-white.png";
 
 @import 'sass-bootstrap/lib/bootstrap';
 

@@ -148,9 +148,9 @@ AppGenerator.prototype.bootstrapJs = function bootstrapJs() {
 
 AppGenerator.prototype.mainStylesheet = function mainStylesheet() {
   if (this.compassBootstrap) {
-    this.copy('main.scss', 'app/' + this.baseDir + '/' + this.cssDir + '/main.scss');
+    this.template('main.scss', 'app/' + this.baseDir + '/' + this.cssDir + '/main.scss');
   } else {
-    this.copy('main.css', 'app/' + this.baseDir + '/' + this.imagesDir + '/main.css');
+    this.copy('main.css', 'app/' + this.baseDir + '/' + this.cssDir + '/main.css');
   }
 };
 
