@@ -45,16 +45,41 @@ AppGenerator.prototype.askFor = function askFor() {
     choices: [{
       name: 'Twitter Bootstrap for Sass',
       value: 'compassBootstrap',
-      checked: true
+      checked: false
     }, {
       name: 'RequireJS',
       value: 'includeRequireJS',
-      checked: true
+      checked: false
     }, {
       name: 'Autoprefixer for your CSS',
       value: 'autoprefixer',
-      checked: true
-    }]
+      checked: false
+    }
+    ]
+  },
+  {
+	  type: 'input',
+	  name: 'baseDir',
+	  message: 'input base directory name( should not include start and last “slash“ )',
+	  default: ''
+  },
+  {
+	  type: 'input',
+	  name: 'jsDir',
+	  message: 'input javascript directory name',
+	  default: 'js'
+  },
+  {
+	  type: 'input',
+	  name: 'cssDir',
+	  message: 'input stylesheets directory name',
+	  default: 'css'
+  },
+  {
+	  type: 'input',
+	  name: 'imagesDir',
+	  message: 'input images directory name',
+	  default: 'images'
   }];
 
   this.prompt(prompts, function (answers) {
@@ -65,6 +90,10 @@ AppGenerator.prototype.askFor = function askFor() {
     this.compassBootstrap = features.indexOf('compassBootstrap') !== -1;
     this.includeRequireJS = features.indexOf('includeRequireJS') !== -1;
     this.autoprefixer = features.indexOf('autoprefixer') !== -1;
+	this.baseDir = answers.baseDir;
+	this.jsDir = answers.jsDir;
+	this.cssDir = answers.cssDir;
+	this.imagesDir = answers.imagesDir;
 
     cb();
   }.bind(this));
@@ -84,7 +113,7 @@ AppGenerator.prototype.git = function git() {
 };
 
 AppGenerator.prototype.bower = function bower() {
-  this.copy('bowerrc', '.bowerrc');
+  this.template('bowerrc', '.bowerrc');
   this.copy('_bower.json', 'bower.json');
 };
 
@@ -97,31 +126,31 @@ AppGenerator.prototype.editorConfig = function editorConfig() {
 };
 
 AppGenerator.prototype.h5bp = function h5bp() {
-  this.copy('favicon.ico', 'app/favicon.ico');
-  this.copy('404.html', 'app/404.html');
-  this.copy('robots.txt', 'app/robots.txt');
-  this.copy('htaccess', 'app/.htaccess');
+  this.copy('favicon.ico', 'app/' + this.baseDir + '/favicon.ico');
+  this.copy('404.html', 'app/' + this.baseDir + '/404.html');
+  this.copy('robots.txt', 'app/' + this.baseDir + '/robots.txt');
+  this.copy('htaccess', 'app/' + this.baseDir + '/.htaccess');
 };
 
 AppGenerator.prototype.bootstrapImg = function bootstrapImg() {
   if (this.compassBootstrap) {
-    this.copy('glyphicons-halflings.png', 'app/images/glyphicons-halflings.png');
-    this.copy('glyphicons-halflings-white.png', 'app/images/glyphicons-halflings-white.png');
+    this.copy('glyphicons-halflings.png', 'app/' + this.baseDir + '/' + this.imagesDir +  '/glyphicons-halflings.png');
+    this.copy('glyphicons-halflings-white.png', 'app/' + this.baseDir + '/' + this.imagesDir + '/glyphicons-halflings-white.png');
   }
 };
 
 AppGenerator.prototype.bootstrapJs = function bootstrapJs() {
   // TODO: create a Bower component for this
   if (this.compassBootstrap) {
-    this.copy('bootstrap.js', 'app/scripts/vendor/bootstrap.js');
+    this.copy('bootstrap.js', 'app/' + this.baseDir + '/' + this.jsDir + '/vendor/bootstrap.js');
   }
 };
 
 AppGenerator.prototype.mainStylesheet = function mainStylesheet() {
   if (this.compassBootstrap) {
-    this.copy('main.scss', 'app/styles/main.scss');
+    this.copy('main.scss', 'app/' + this.baseDir + '/' + this.cssDir + '/main.scss');
   } else {
-    this.copy('main.css', 'app/styles/main.css');
+    this.copy('main.css', 'app/' + this.baseDir + '/' + this.imagesDir + '/main.css');
   }
 };
 
@@ -138,15 +167,15 @@ AppGenerator.prototype.writeIndex = function writeIndex() {
 
   if (!this.includeRequireJS) {
     this.indexFile = this.appendScripts(this.indexFile, 'scripts/main.js', [
-      'bower_components/jquery/jquery.js',
-      'scripts/main.js'
+      this.jsDir + '/bower_components/jquery/jquery.js',
+      this.jsDir + '/main.js'
     ]);
 
     this.indexFile = this.appendFiles({
       html: this.indexFile,
       fileType: 'js',
-      optimizedPath: 'scripts/coffee.js',
-      sourceFileList: ['scripts/hello.js'],
+      optimizedPath: this.baseDir + '/' + this.jsDir + '/coffee.js',
+      sourceFileList: [this.jsDir + '/hello.js'],
       searchPath: '.tmp'
     });
   }
@@ -158,19 +187,19 @@ AppGenerator.prototype.writeIndex = function writeIndex() {
   if (this.compassBootstrap && !this.includeRequireJS) {
     // wire Twitter Bootstrap plugins
     this.indexFile = this.appendScripts(this.indexFile, 'scripts/plugins.js', [
-      'bower_components/sass-bootstrap/js/bootstrap-affix.js',
-      'bower_components/sass-bootstrap/js/bootstrap-alert.js',
-      'bower_components/sass-bootstrap/js/bootstrap-dropdown.js',
-      'bower_components/sass-bootstrap/js/bootstrap-tooltip.js',
-      'bower_components/sass-bootstrap/js/bootstrap-modal.js',
-      'bower_components/sass-bootstrap/js/bootstrap-transition.js',
-      'bower_components/sass-bootstrap/js/bootstrap-button.js',
-      'bower_components/sass-bootstrap/js/bootstrap-popover.js',
-      'bower_components/sass-bootstrap/js/bootstrap-typeahead.js',
-      'bower_components/sass-bootstrap/js/bootstrap-carousel.js',
-      'bower_components/sass-bootstrap/js/bootstrap-scrollspy.js',
-      'bower_components/sass-bootstrap/js/bootstrap-collapse.js',
-      'bower_components/sass-bootstrap/js/bootstrap-tab.js'
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-affix.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-alert.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-dropdown.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-tooltip.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-modal.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-transition.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-button.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-popover.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-typeahead.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-carousel.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-scrollspy.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-collapse.js',
+      this.jsDir + 'bower_components/sass-bootstrap/js/bootstrap-tab.js'
     ]);
   }
 
@@ -194,6 +223,9 @@ AppGenerator.prototype.writeIndex = function writeIndex() {
 
   // append the default content
   this.indexFile = this.indexFile.replace('<body>', '<body>\n' + contentText.join('\n'));
+
+  this.indexFile = this.indexFile.replace("&lt;%= cssDir %&gt;", this.cssDir);
+  this.indexFile = this.indexFile.replace("&lt;%= jsDir %&gt;", this.jsDir);
 };
 
 // TODO(mklabs): to be put in a subgenerator like rjs:app
@@ -202,12 +234,12 @@ AppGenerator.prototype.requirejs = function requirejs() {
     return;
   }
 
-  this.indexFile = this.appendScripts(this.indexFile, 'scripts/main.js', ['bower_components/requirejs/require.js'], {
-    'data-main': 'scripts/main'
+  this.indexFile = this.appendScripts(this.indexFile, this.baseDir + '/' + this.jsDir + '/main.js', [this.jsDir + '/bower_components/requirejs/require.js'], {
+    'data-main': this.jsDir + '/main'
   });
 
   // add a basic amd module
-  this.write('app/scripts/app.js', [
+  this.write('app/' + this.baseDir + '/' + this.jsDir + '/app.js', [
     '/*global define */',
     'define([], function () {',
     '    \'use strict\';\n',
@@ -215,17 +247,18 @@ AppGenerator.prototype.requirejs = function requirejs() {
     '});'
   ].join('\n'));
 
-  this.template('require_main.js', 'app/scripts/main.js');
+  this.template('require_main.js', 'app/' + this.baseDir + '/' + this.jsDir + '/main.js');
 };
 
 AppGenerator.prototype.app = function app() {
+  var jsDir = 'app/' + this.baseDir + '/' + this.jsDir;
   this.mkdir('app');
-  this.mkdir('app/scripts');
-  this.mkdir('app/styles');
-  this.mkdir('app/images');
-  this.write('app/index.html', this.indexFile);
-  this.write('app/scripts/hello.coffee', this.mainCoffeeFile);
+  this.mkdir(jsDir);
+  this.mkdir('app/' + this.baseDir + '/' + this.cssDir);
+  this.mkdir('app/' + this.baseDir + '/' + this.imagesDir);
+  this.write('app/' + this.baseDir + '/index.html', this.indexFile);
+  this.write( jsDir + '/hello.coffee', this.mainCoffeeFile);
   if (!this.includeRequireJS) {
-    this.write('app/scripts/main.js', 'console.log(\'\\\'Allo \\\'Allo!\');');
+    this.write(jsDir + '/main.js', 'console.log(\'\\\'Allo \\\'Allo!\');');
   }
 };
